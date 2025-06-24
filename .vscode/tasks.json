@@ -1,0 +1,85 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "watch",
+      "problemMatcher": "$tsc-watch",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "never"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "type": "npm",
+      "script": "compile",
+      "problemMatcher": "$tsc",
+      "group": "build"
+    },
+    {
+      "type": "npm",
+      "script": "pretest",
+      "problemMatcher": ["$tsc", "$eslint-stylish"],
+      "group": "test"
+    },
+    {
+      "type": "npm",
+      "script": "test",
+      "problemMatcher": "$tsc",
+      "group": "test"
+    },
+    {
+      "type": "npm",
+      "script": "package",
+      "problemMatcher": [],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },    {
+      "label": "Install Extension",
+      "type": "npm",
+      "script": "install-package",
+      "dependsOn": "npm: package",
+      "problemMatcher": [],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Clean Build",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "clean"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Full Rebuild",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Clean Build",
+        "npm: compile"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}
