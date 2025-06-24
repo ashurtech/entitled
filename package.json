@@ -2,7 +2,7 @@
   "name": "entitled",
   "displayName": "Entitled - Custom Window Titles",
   "description": "Customize VS Code window titles with workspace, branch, and filename information",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "publisher": "ASHURTECHNET",
   "repository": {
     "type": "git",
@@ -21,6 +21,10 @@
     "customization"
   ],
   "icon": "cake.png",
+  "galleryBanner": {
+    "color": "#2D1B69",
+    "theme": "dark"
+  },
   "engines": {
     "vscode": "^1.74.0",
     "node": ">=18.0.0"
