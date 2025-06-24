@@ -3,14 +3,17 @@
 ## Current Configuration
 
 - **Icon file**: `cake.png` (128x128 pixels, PNG format)
-- **Source**: Converted from `cake.svg` using high-quality conversion
+- **Source**: Converted from `cake-colorful.svg` with dark-background optimization  
 - **Package.json**: Configured with `"icon": "cake.png"`
+- **Design**: Golden cake with colorful decorations, visible on both light and dark backgrounds
 
 ## Files
 
-- `cake.svg` - Original SVG icon design
-- `cake.png` - Extension marketplace icon (auto-generated from SVG)
-- `svg-to-png.js` - Conversion script using Sharp library
+- `cake-colorful.svg` - Optimized SVG icon with colors for dark background compatibility
+- `cake.svg` - Original black SVG icon design
+- `cake.png` - Extension marketplace icon (auto-generated from colorful SVG)
+- `create-dark-friendly-icon.js` - Conversion script for dark-friendly icon
+- `svg-to-png.js` - Original conversion script using Sharp library
 - `convert-icon.js` - Helper script for manual conversion guidance
 - `generate-icon.js` - Alternative generation script
 
@@ -29,7 +32,10 @@ If you need to update the icon from the SVG source:
 # Ensure Sharp is installed
 npm install --save-dev sharp
 
-# Convert SVG to PNG
+# Create dark-friendly colorful icon (recommended)
+node create-dark-friendly-icon.js
+
+# Or convert original black SVG (for light backgrounds only)
 node svg-to-png.js
 ```
 
