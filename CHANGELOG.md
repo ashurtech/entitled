@@ -382,3 +382,16 @@ This pattern will:
 - No more empty brackets when branch isn't available
 - Reliable project identification even when workspace names differ from repo names
 - Graceful handling of non-git projects
+
+## Version 0.1.6 - 2025-06-25
+
+### Timestamp Format Update
+**What Changed:** Changed timestamp display from relative format ("now", "2m ago") to 24-hour format (HH:MM)
+**Why:** User preference for cleaner, more precise time display
+**Files Modified:**
+- Updated `WindowTitleService.formatTimestamp()` method
+- Updated all timestamp-related tests to use 24-hour format
+- Updated documentation in README.md and FALLBACK_EXAMPLES.md
+- Incremented version to 0.1.6
+
+**Impact:** The `{timestamp}` variable now shows time like "14:30" instead of "2m ago"
