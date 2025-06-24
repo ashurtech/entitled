@@ -2,7 +2,7 @@
   "name": "entitled",
   "displayName": "Entitled - Custom Window Titles",
   "description": "Customize VS Code window titles with workspace, branch, and filename information",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "publisher": "ASHURTECHNET",
   "repository": {
     "type": "git",
@@ -19,7 +19,9 @@
     "git",
     "branch",
     "customization"
-  ],  "engines": {
+  ],
+  "icon": "cake.png",
+  "engines": {
     "vscode": "^1.74.0",
     "node": ">=18.0.0"
   },
@@ -28,7 +30,8 @@
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
-  "contributes": {    "commands": [
+  "contributes": {
+    "commands": [
       {
         "command": "entitled.helloWorld",
         "title": "Hello World",
@@ -52,7 +55,8 @@
           "type": "boolean",
           "default": true,
           "description": "Enable custom window title formatting"
-        },        "entitled.titlePattern": {
+        },
+        "entitled.titlePattern": {
           "type": "string",
           "default": "{workspace} {branch} {filename} - VSCode",
           "description": "Custom title pattern with variable substitution and smart fallbacks. Variables: {workspace}, {repo}, {branch}, {filename}, {timestamp}. Use || for fallbacks: {workspace || repo || filename} will use the first non-empty value. Examples: '{workspace || repo} [{branch}] (last: {timestamp})' or '{timestamp} | {workspace || repo || filename}'"
@@ -91,12 +95,14 @@
     "@typescript-eslint/parser": "^5.45.0",
     "@vscode/test-electron": "^2.2.0",
     "@vscode/vsce": "^2.15.0",
+    "canvas": "^3.1.1",
     "eslint": "^8.28.0",
     "glob": "^8.0.3",
     "mocha": "^10.1.0",
     "nyc": "^15.1.0",
     "ovsx": "^0.8.3",
     "rimraf": "^3.0.2",
+    "sharp": "^0.34.2",
     "typescript": "^4.9.4"
   }
 }
