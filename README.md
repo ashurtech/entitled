@@ -122,7 +122,7 @@ npm run package
 - **WindowTitleService**: Core service handling title composition and updates
 - **Git Integration**: Uses VS Code's Git API with `.git/HEAD` fallback
 - **Event-Driven**: Listens to workspace and editor changes
-- **Configuration-Aware**: Respects user preferences and custom patterns
+- **Configuration-Aware**: Respects most user preferences and custom patterns
 
 ## 🤝 Contributing
 

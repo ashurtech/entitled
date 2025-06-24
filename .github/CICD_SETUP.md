@@ -39,14 +39,13 @@ Set up branch protection for `main` branch:
 1. Go to Repository Settings → Branches
 2. Add rule for `main` branch:
    - Require pull request reviews before merging
-   - Require status checks to pass before merging
-   - Required status checks:
+   - Require status checks to pass before merging   - Required status checks:
      - `lint-and-test (16.x)`
      - `lint-and-test (18.x)`
      - `lint-and-test (20.x)`
      - `version-check`
      - `security-scan`
-     - `dependency-review`
+     ~~- `dependency-review`~~ (disabled - requires GitHub Advanced Security)
    - Require branches to be up to date before merging
    - Restrict pushes that create files that match `.github/workflows/*`
 

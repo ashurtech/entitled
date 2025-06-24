@@ -130,18 +130,19 @@ jobs:
       uses: github/codeql-action/upload-sarif@v3
       if: always()
       with:
-        sarif_file: snyk.sarif
-
-  dependency-review:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Dependency Review
-      uses: actions/dependency-review-action@v4
-      with:
-        fail-on-severity: moderate
-        allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC
+        sarif_file: snyk.sarif  # dependency-review:
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'pull_request'
+  #   
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v4
+  #   
+  #   - name: Dependency Review
+  #     uses: actions/dependency-review-action@v4
+  #     with:
+  #       fail-on-severity: moderate
+  #       allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC
+  #   
+  #   # NOTE: Dependency Review requires GitHub Advanced Security
+  #   # Enable this job if you have GitHub Advanced Security enabled

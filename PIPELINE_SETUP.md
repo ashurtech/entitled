@@ -21,11 +21,11 @@ Go to your GitHub repo → Settings → Branches → Add rule for `main`:
 - ✅ Require status checks to pass before merging
 - Required status checks:
   - `lint-and-test (16.x)`
-  - `lint-and-test (18.x)` 
+  - `lint-and-test (18.x)`
   - `lint-and-test (20.x)`
   - `version-check`
   - `security-scan`
-  - `dependency-review`
+  ~~- `dependency-review`~~ (disabled - requires GitHub Advanced Security)
 - ✅ Require branches to be up to date before merging
 
 ### 2. Get VS Code Marketplace Token
