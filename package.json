@@ -28,11 +28,20 @@
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
-  "contributes": {
-    "commands": [
+  "contributes": {    "commands": [
       {
         "command": "entitled.helloWorld",
         "title": "Hello World",
+        "category": "Entitled"
+      },
+      {
+        "command": "entitled.refreshTitle",
+        "title": "Refresh Window Title",
+        "category": "Entitled"
+      },
+      {
+        "command": "entitled.resetTitle",
+        "title": "Reset Window Title to Default",
         "category": "Entitled"
       }
     ],

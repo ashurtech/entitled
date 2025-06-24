@@ -196,24 +196,58 @@ export class WindowTitleService {
                 return components.timestamp;
             default:
                 return '';
-        }
-    }public async updateTitle(): Promise<void> {
+        }    }    public async updateTitle(): Promise<void> {
         const components = await this.gatherTitleComponents();
-        const title = this.composeTitle(components);
+        const config = vscode.workspace.getConfiguration('entitled');
+        const pattern = config.get<string>('titlePattern', '{workspace} - {branch}');
+        
+        // Use custom title pattern if configured, otherwise use default title
+        const title = pattern ? this.composeCustomTitle(pattern, components) : this.composeTitle(components);
+        
+        console.log('Entitled: Updating window title:', title);
+        console.log('Entitled: Components:', components);
+        console.log('Entitled: Pattern used:', pattern);
         
         // Notify callbacks
         this.titleUpdateCallbacks.forEach(callback => callback(title));
         
         // Update the window title using VS Code's window.title setting
         try {
-            const config = vscode.workspace.getConfiguration('window');
-            // Use Global configuration target if workspace is not available
-            const configTarget = vscode.workspace.workspaceFolders 
-                ? vscode.ConfigurationTarget.Workspace 
-                : vscode.ConfigurationTarget.Global;
-            await config.update('title', title, configTarget);
+            const windowConfig = vscode.workspace.getConfiguration('window');
+            const currentTitle = windowConfig.get<string>('title');
+            console.log('Entitled: Current window.title setting:', currentTitle);
+            
+            // Check if we have an open workspace/folder to determine the appropriate config target
+            const hasWorkspace = vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0;
+            
+            if (hasWorkspace) {
+                // Use Workspace configuration target so it only affects this workspace
+                await windowConfig.update('title', title, vscode.ConfigurationTarget.Workspace);
+                console.log('Entitled: Window title updated to workspace config');
+            } else {
+                // No workspace open, use Global configuration (affects all VS Code windows)
+                await windowConfig.update('title', title, vscode.ConfigurationTarget.Global);
+                console.log('Entitled: Window title updated to global config (no workspace open)');
+            }
+            
+            // Verify the update
+            const updatedTitle = windowConfig.get<string>('title');
+            console.log('Entitled: Verified updated title:', updatedTitle);
+            
         } catch (error) {
-            console.warn('Failed to update window title:', error);
+            console.error('Entitled: Failed to update window title:', error);
+            
+            // If workspace update fails, try global as fallback
+            if (error instanceof Error && error.message.includes('Workspace Settings')) {
+                try {
+                    console.log('Entitled: Retrying with global config...');
+                    const windowConfig = vscode.workspace.getConfiguration('window');
+                    await windowConfig.update('title', title, vscode.ConfigurationTarget.Global);
+                    console.log('Entitled: Successfully updated window title using global config');
+                } catch (globalError) {
+                    console.error('Entitled: Failed to update window title with global config:', globalError);
+                }
+            }
         }
     }
 
@@ -244,10 +278,47 @@ export class WindowTitleService {
             filename: filename,
             timestamp: timestamp
         };
-    }public dispose(): void {
+    }    public dispose(): void {
+        // Reset window title to default before disposing
+        this.resetWindowTitle();
+        
         this.disposables.forEach(disposable => disposable.dispose());
         this.disposables = [];
         this.titleUpdateCallbacks = [];
+    }    public async resetWindowTitle(): Promise<void> {
+        try {
+            console.log('Entitled: Resetting window title to default');
+            const windowConfig = vscode.workspace.getConfiguration('window');
+            
+            // Check if we have an open workspace/folder
+            const hasWorkspace = vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0;
+            const defaultTitle = '${dirty}${activeEditorShort}${separator}${rootName}${separator}${appName}';
+            
+            if (hasWorkspace) {
+                // Reset the workspace setting
+                await windowConfig.update('title', defaultTitle, vscode.ConfigurationTarget.Workspace);
+                console.log('Entitled: Window title reset to default (workspace)');
+            } else {
+                // No workspace, use global setting
+                await windowConfig.update('title', defaultTitle, vscode.ConfigurationTarget.Global);
+                console.log('Entitled: Window title reset to default (global)');
+            }
+        } catch (error) {
+            // If workspace update fails, try global as fallback
+            if (error instanceof Error && error.message.includes('Workspace Settings')) {
+                try {
+                    console.log('Entitled: Retrying reset with global config...');
+                    const windowConfig = vscode.workspace.getConfiguration('window');
+                    const defaultTitle = '${dirty}${activeEditorShort}${separator}${rootName}${separator}${appName}';
+                    await windowConfig.update('title', defaultTitle, vscode.ConfigurationTarget.Global);
+                    console.log('Entitled: Window title reset to default (global fallback)');
+                } catch (globalError) {
+                    console.error('Entitled: Failed to reset window title with global config:', globalError);
+                }
+            } else {
+                console.error('Entitled: Failed to reset window title:', error);
+            }
+        }
     }
 
     // For testing purposes
