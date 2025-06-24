@@ -4,21 +4,25 @@
 [![Installs](https://img.shields.io/visual-studio-marketplace/i/your-publisher-name.entitled)](https://marketplace.visualstudio.com/items?itemName=your-publisher-name.entitled)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A VS Code extension that customizes window titles to show the information you actually need: **workspace name**, **git branch**, and **current filename**.
+A VS Code extension that customizes window titles to show the information you actually need: **workspace name**, **git repository**, **branch**, **filename**, and **timestamps** with smart fallback patterns.
 
 ## ✨ Features
 
-- 🏷️ **Smart Window Titles**: Display workspace, branch, and filename in a clean format
-- 🌳 **Git Integration**: Automatically detects current branch using VS Code's built-in Git API  
+- 🏷️ **Smart Window Titles**: Display workspace, repository, branch, filename, and timestamps
+- 🌳 **Git Integration**: Automatically detects repository name and branch using VS Code's Git API  
 - ⚙️ **Fully Customizable**: Create your own title patterns with template variables
-- 🔄 **Real-time Updates**: Titles update automatically when you switch files or branches
-- 🎯 **Lightweight**: Minimal performance impact with comprehensive test coverage
+- 🔄 **Real-time Updates**: Titles update automatically when you switch files, lose focus, or change branches
+- 🎯 **Smart Fallbacks**: Use `||` syntax for graceful degradation when variables are empty
+- ⏰ **Timestamp Tracking**: Shows last modification time that updates on window focus loss
+- 🚀 **Lightweight**: Minimal performance impact with comprehensive test coverage
 
 ## 🚀 Quick Start
 
 1. Install the extension from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=your-publisher-name.entitled)
 2. Open any workspace with a Git repository
 3. Your window title will automatically show: `workspace-name [branch-name] filename.ext - VSCode`
+
+To enable smart fallbacks, try: `{workspace || repo || filename} [{branch}] (last: {timestamp})`
 
 ## 📋 Default Format
 
@@ -49,23 +53,55 @@ my-project [feature/new-feature] index.ts - VSCode
 ```
 
 **Available Variables:**
+
 - `{workspace}` - Workspace or folder name
+- `{repo}` - Git repository name (extracted from git config)
 - `{branch}` - Current git branch
 - `{filename}` - Active file name
+- `{timestamp}` - Last modification time (updates on window focus loss)
+
+**Fallback Patterns:**
+
+Use the `||` operator to create smart fallbacks that gracefully handle missing information:
+
+```json
+// Use workspace name, fall back to repo name, then filename
+"{workspace || repo || filename} [{branch}] (last: {timestamp})"
+
+// Multiple fallback chains in one pattern
+"{workspace || repo} - {branch || filename} - VSCode"
+
+// Simple fallback
+"{timestamp} | {workspace || repo}"
+```
+
+**How Fallbacks Work:**
+
+- Evaluates variables **left-to-right**
+- Uses the **first non-empty** value found
+- Supports **multiple fallback patterns** in one title
+- Handles **whitespace** gracefully around `||`
+- **Backwards compatible** with single-variable patterns
 
 **Example Patterns:**
 ```json
-// Default format
-"{workspace} [{branch}] {filename} - VSCode"
+// Default format with fallback
+"{workspace || repo} [{branch}] {filename} - VSCode"
 
-// Pipe separated
-"{workspace} | {branch} | {filename}"
+// Timestamp with project fallback
+"{timestamp} | {workspace || repo || filename}"
 
-// Minimal format
-"{workspace} - {filename}"
+// Pipe separated with fallbacks
+"{workspace || repo} | {branch || filename} | {timestamp}"
 
-// Branch focused
-"[{branch}] {workspace}/{filename}"
+// Minimal format with smart fallback
+"{workspace || repo} - {filename}"
+
+// Branch focused with fallback
+"[{branch || timestamp}] {workspace || repo}/{filename}"
+
+// Complex pattern with multiple fallbacks
+"{workspace || repo || filename} [{branch}] (last: {timestamp}) - VSCode"
 ```
 
 ## 🛠️ Development
@@ -111,9 +147,11 @@ npm run package
 
 ## 🧪 Test Coverage
 
-- ✅ 16 comprehensive tests covering all functionality
+- ✅ 31 comprehensive tests covering all functionality
 - ✅ Title component extraction and composition
-- ✅ Git branch detection with fallbacks
+- ✅ Git branch detection and repository name extraction with fallbacks  
+- ✅ Fallback pattern parsing and evaluation
+- ✅ Timestamp functionality and focus loss detection
 - ✅ Configuration handling and edge cases
 - ✅ Real-time update mechanisms
 

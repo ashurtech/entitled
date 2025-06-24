@@ -1,7 +1,6 @@
 {
   "version": "0.2.0",
-  "configurations": [
-    {
+  "configurations": [    {
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
@@ -11,7 +10,6 @@
       "outFiles": [
         "${workspaceFolder}/out/**/*.js"
       ],
-      "preLaunchTask": "${workspaceFolder}:npm: watch",
       "sourceMaps": true,
       "smartStep": true,
       "skipFiles": [
@@ -29,7 +27,7 @@
       "outFiles": [
         "${workspaceFolder}/out/test/**/*.js"
       ],
-      "preLaunchTask": "${workspaceFolder}:npm: pretest",
+      "preLaunchTask": "npm: pretest",
       "sourceMaps": true,
       "smartStep": true,
       "skipFiles": [
@@ -46,7 +44,7 @@
       "outFiles": [
         "${workspaceFolder}/out/**/*.js"
       ],
-      "preLaunchTask": "${workspaceFolder}:npm: compile",
+      "preLaunchTask": "npm: compile",
       "sourceMaps": true,
       "smartStep": true,
       "skipFiles": [

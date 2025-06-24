@@ -4,16 +4,35 @@ import * as fs from 'fs';
 
 export interface TitleComponents {
     workspace: string;
+    repo: string;
     branch: string;
     filename: string;
+    timestamp: string;
 }
 
 export class WindowTitleService {
     private disposables: vscode.Disposable[] = [];
-    private titleUpdateCallbacks: ((title: string) => void)[] = [];
+    private titleUpdateCallbacks: ((title: string) => void)[] = [];    private lastModified: Date = new Date();
 
     constructor() {
         this.setupEventListeners();
+    }
+
+    private formatTimestamp(date: Date): string {
+        const now = new Date();
+        const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+        
+        if (diffInMinutes < 1) {
+            return 'now';
+        } else if (diffInMinutes < 60) {
+            return `${diffInMinutes}m ago`;
+        } else if (diffInMinutes < 1440) { // 24 hours
+            const hours = Math.floor(diffInMinutes / 60);
+            return `${hours}h ago`;
+        } else {
+            const days = Math.floor(diffInMinutes / 1440);
+            return `${days}d ago`;
+        }
     }
 
     private setupEventListeners(): void {
@@ -22,15 +41,33 @@ export class WindowTitleService {
             vscode.window.onDidChangeActiveTextEditor(() => {
                 this.handleActiveEditorChange();
             })
-        );
-
-        // Listen for workspace changes
+        );        // Listen for workspace changes
         this.disposables.push(
             vscode.workspace.onDidChangeWorkspaceFolders(() => {
                 this.updateTitle();
             })
         );
-    }    public extractWorkspaceName(workspace: vscode.WorkspaceFolder | undefined): string {
+
+        // Listen for window state changes (focus loss)
+        this.disposables.push(
+            vscode.window.onDidChangeWindowState((windowState) => {
+                if (!windowState.focused) {
+                    // Window lost focus - update timestamp
+                    this.lastModified = new Date();
+                    this.updateTitle();
+                }
+            })
+        );
+
+        // Listen for configuration changes
+        this.disposables.push(
+            vscode.workspace.onDidChangeConfiguration((e) => {
+                if (e.affectsConfiguration('entitled')) {
+                    this.updateTitle();
+                }
+            })
+        );
+    }public extractWorkspaceName(workspace: vscode.WorkspaceFolder | undefined): string {
         if (!workspace) {
             return '';
         }
@@ -45,14 +82,13 @@ export class WindowTitleService {
         try {
             // Try to get branch name from VS Code's built-in git API
             const gitExtension = vscode.extensions.getExtension('vscode.git');
-            if (gitExtension && gitExtension.isActive) {
+            if (gitExtension?.isActive) {
                 const git = gitExtension.exports.getAPI(1);
                 const repository = git.repositories.find((repo: any) => 
                     workspacePath.startsWith(repo.rootUri.fsPath)
                 );
-                
-                if (repository && repository.state.HEAD) {
-                    return repository.state.HEAD.name || '';
+                  if (repository?.state.HEAD) {
+                    return repository.state.HEAD.name ?? '';
                 }
             }
             
@@ -120,17 +156,48 @@ export class WindowTitleService {
         const title = parts.length > 0 ? `${parts.join(' ')} - VSCode` : 'VSCode';
         
         return title;
-    }
-
-    public composeCustomTitle(pattern: string, components: TitleComponents): string {
+    }    public composeCustomTitle(pattern: string, components: TitleComponents): string {
         let result = pattern;
         
-        result = result.replace('{workspace}', components.workspace);
-        result = result.replace('{branch}', components.branch);
-        result = result.replace('{filename}', components.filename);
+        // Handle fallback patterns with || syntax
+        // Example: {workspace || repo || filename} -> use first non-empty value
+        const fallbackPattern = /\{([^}]+)\}/g;
+        
+        result = result.replace(fallbackPattern, (match, variableList) => {
+            // Split by || and trim whitespace
+            const variables = variableList.split('||').map((v: string) => v.trim());
+            
+            // Try each variable in order until we find a non-empty value
+            for (const variable of variables) {
+                const value = this.getVariableValue(variable, components);
+                if (value && value.trim() !== '') {
+                    return value;
+                }
+            }
+            
+            // If all variables are empty, return empty string
+            return '';
+        });
         
         return result;
-    }    public async updateTitle(): Promise<void> {
+    }
+
+    private getVariableValue(variable: string, components: TitleComponents): string {
+        switch (variable) {
+            case 'workspace':
+                return components.workspace;
+            case 'repo':
+                return components.repo;
+            case 'branch':
+                return components.branch;
+            case 'filename':
+                return components.filename;
+            case 'timestamp':
+                return components.timestamp;
+            default:
+                return '';
+        }
+    }public async updateTitle(): Promise<void> {
         const components = await this.gatherTitleComponents();
         const title = this.composeTitle(components);
         
@@ -156,9 +223,7 @@ export class WindowTitleService {
 
     public onTitleUpdate(callback: (title: string) => void): void {
         this.titleUpdateCallbacks.push(callback);
-    }
-
-    private async gatherTitleComponents(): Promise<TitleComponents> {
+    }    private async gatherTitleComponents(): Promise<TitleComponents> {
         const workspace = vscode.workspace.workspaceFolders?.[0];
         const workspaceName = this.extractWorkspaceName(workspace);
         
@@ -166,18 +231,78 @@ export class WindowTitleService {
             ? await this.extractBranchName(workspace.uri.fsPath)
             : '';
             
-        const filename = this.extractFileName(vscode.window.activeTextEditor);
+        const repoName = workspace 
+            ? await this.extractRepoName(workspace.uri.fsPath)
+            : '';
+              const filename = this.extractFileName(vscode.window.activeTextEditor);
+        const timestamp = this.formatTimestamp(this.lastModified);
 
         return {
             workspace: workspaceName,
+            repo: repoName,
             branch: branchName,
-            filename: filename
+            filename: filename,
+            timestamp: timestamp
         };
-    }
-
-    public dispose(): void {
+    }public dispose(): void {
         this.disposables.forEach(disposable => disposable.dispose());
         this.disposables = [];
         this.titleUpdateCallbacks = [];
+    }
+
+    // For testing purposes
+    public setLastModified(date: Date): void {
+        this.lastModified = date;
+    }
+
+    public getFormattedTimestamp(): string {
+        return this.formatTimestamp(this.lastModified);
+    }
+
+    public async extractRepoName(workspacePath: string): Promise<string> {
+        try {
+            // Try to get repository name from VS Code's built-in git API
+            const gitExtension = vscode.extensions.getExtension('vscode.git');
+            if (gitExtension?.isActive) {
+                const git = gitExtension.exports.getAPI(1);
+                const repository = git.repositories.find((repo: any) => 
+                    workspacePath.startsWith(repo.rootUri.fsPath)
+                );
+                
+                if (repository?.rootUri) {
+                    // Extract the repository name from the root path
+                    return path.basename(repository.rootUri.fsPath);
+                }
+            }
+            
+            // Fallback: Try to find .git folder and use parent directory name
+            const gitDir = path.join(workspacePath, '.git');
+            if (fs.existsSync(gitDir)) {
+                return path.basename(workspacePath);
+            }
+              // If not a git repository, try to get remote origin URL
+            const gitConfigPath = path.join(workspacePath, '.git', 'config');
+            if (fs.existsSync(gitConfigPath)) {
+                const configContent = fs.readFileSync(gitConfigPath, 'utf8');
+                const originRegex = /\[remote "origin"\][\s\S]*?url = (.+)/;
+                const originMatch = originRegex.exec(configContent);
+                if (originMatch?.[1]) {
+                    const originUrl = originMatch[1].trim();
+                    // Extract repo name from various URL formats
+                    // github.com/user/repo.git -> repo
+                    // github.com/user/repo -> repo
+                    const repoRegex = /\/([^/]+?)(?:\.git)?$/;
+                    const repoMatch = repoRegex.exec(originUrl);
+                    if (repoMatch) {
+                        return repoMatch[1];
+                    }
+                }
+            }
+            
+            return '';
+        } catch (error) {
+            console.warn('Failed to extract git repository name:', error);
+            return '';
+        }
     }
 }

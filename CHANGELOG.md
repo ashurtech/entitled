@@ -305,3 +305,80 @@ entitled-0.0.1.vsix (11.35 KB)
 - ✅ Add configuration options
 
 **Current Status:** Core functionality complete, CI/CD pipeline operational ✅
+
+## Current Version - v0.0.4
+
+### 2025-06-24 - Added Repository Name Variable
+**What Changed:** Added `{repo}` variable for git repository name extraction
+**Why:** Provides distinction between workspace folder name and actual git repository name, useful when they differ
+**Files Modified:**
+
+- Updated `src/services/WindowTitleService.ts`:
+  - Added `repo` to `TitleComponents` interface
+  - Implemented `extractRepoName()` method with multiple extraction strategies
+  - Updated `gatherTitleComponents()` to include repository name
+  - Updated `composeCustomTitle()` to handle `{repo}` variable
+- Updated `package.json`:
+  - Added `{repo}` to configuration description
+- Updated `src/test/suite/windowTitleService.test.ts`:
+  - Added repo property to all test components
+  - Added test for repository name extraction
+  - Added test for `{repo}` variable in custom patterns
+
+**How It Works:**
+- Extracts repository name from VS Code's git API when available
+- Falls back to .git directory inspection
+- Parses remote origin URL to extract repository name from various formats
+- Returns empty string if not a git repository
+
+**Usage Example:**
+```json
+{
+  "entitled.titlePattern": "{repo} [{branch}] {filename} (last: {timestamp})"
+}
+```
+
+### 2025-06-24 - Added Fallback Pattern Support
+
+**What Changed:** Implemented fallback pattern syntax with `||` operator for robust title patterns
+
+**Why:** Provides graceful degradation when preferred variables are empty, making title patterns more flexible and reliable
+
+**Files Modified:**
+
+- Updated `src/services/WindowTitleService.ts`:
+  - Completely rewrote `composeCustomTitle()` to handle fallback patterns
+  - Added `getVariableValue()` helper method for variable resolution
+  - Added regex-based pattern matching for `{variable1 || variable2 || variable3}` syntax
+- Updated `package.json`:
+  - Added fallback syntax documentation to configuration description
+- Updated `src/test/suite/windowTitleService.test.ts`:
+  - Added 8 comprehensive tests covering all fallback scenarios
+  - Tests cover single fallbacks, multiple fallbacks, spaces, edge cases
+
+**How It Works:**
+
+- Uses `||` operator for fallback chains: `{workspace || repo || filename}`
+- Evaluates variables left-to-right, using first non-empty value
+- Supports multiple fallback patterns in one title
+- Handles whitespace gracefully around `||` operators
+- Backwards compatible with existing single-variable patterns
+
+**Usage Examples:**
+
+```json
+{
+  "entitled.titlePattern": "{workspace || repo || filename} [{branch}] (last: {timestamp})"
+}
+```
+
+This pattern will:
+1. Use `workspace` if available
+2. Fall back to `repo` if workspace is empty
+3. Fall back to `filename` if both workspace and repo are empty
+4. Always show branch and timestamp if available
+
+**Real-world Benefits:**
+- No more empty brackets when branch isn't available
+- Reliable project identification even when workspace names differ from repo names
+- Graceful handling of non-git projects
