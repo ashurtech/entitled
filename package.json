@@ -1,1 +1,94 @@
-{"name":"entitled","displayName":"Entitled - Custom Window Titles","description":"Customize VS Code window titles with workspace, branch, and filename information","version":"0.0.2","publisher":"ASHURTECH.NET","repository":{"type":"git","url":"https://github.com/ashurtech/entitled.git"},"bugs":{"url":"https://github.com/ashurtech/entitled/issues"},"homepage":"https://github.com/ashurtech/entitled#readme","keywords":["window","title","workspace","git","branch","customization"],"engines":{"vscode":"^1.74.0"},"categories":["Other"],"activationEvents":[],"main":"./out/extension.js","contributes":{"commands":[{"command":"entitled.helloWorld","title":"Hello World","category":"Entitled"}],"configuration":{"title":"Entitled","properties":{"entitled.enableCustomTitle":{"type":"boolean","default":true,"description":"Enable custom window title formatting"},"entitled.titlePattern":{"type":"string","default":"{workspace} {branch} {filename} - VSCode","description":"Custom title pattern. Available variables: {workspace}, {branch}, {filename}"}}}},"scripts":{"vscode:prepublish":"npm run compile","compile":"tsc -p ./","watch":"tsc -watch -p ./","pretest":"npm run compile && npm run lint","lint":"eslint src --ext ts","lint:fix":"eslint src --ext ts --fix","test":"node ./out/test/runTest.js","test:coverage":"nyc npm test","clean":"rimraf out","package":"vsce package","install-package":"code --install-extension entitled-0.0.1.vsix","publish":"vsce publish","publish:ovsx":"ovsx publish","version:patch":"npm version patch","version:minor":"npm version minor","version:major":"npm version major","security:audit":"npm audit --audit-level=moderate","security:fix":"npm audit fix","deps:check":"npm outdated","deps:update":"npm update"},"devDependencies":{"@types/glob":"^8.1.0","@types/mocha":"^10.0.1","@types/node":"16.x","@types/vscode":"^1.74.0","@typescript-eslint/eslint-plugin":"^5.45.0","@typescript-eslint/parser":"^5.45.0","@vscode/test-electron":"^2.2.0","@vscode/vsce":"^2.15.0","eslint":"^8.28.0","glob":"^8.0.3","mocha":"^10.1.0","nyc":"^15.1.0","ovsx":"^0.8.3","rimraf":"^3.0.2","typescript":"^4.9.4"}}
+{
+  "name": "entitled",
+  "displayName": "Entitled - Custom Window Titles",
+  "description": "Customize VS Code window titles with workspace, branch, and filename information",
+  "version": "0.0.3",
+  "publisher": "ASHURTECH.NET",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ashurtech/entitled.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ashurtech/entitled/issues"
+  },
+  "homepage": "https://github.com/ashurtech/entitled#readme",
+  "keywords": [
+    "window",
+    "title",
+    "workspace",
+    "git",
+    "branch",
+    "customization"
+  ],
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "entitled.helloWorld",
+        "title": "Hello World",
+        "category": "Entitled"
+      }
+    ],
+    "configuration": {
+      "title": "Entitled",
+      "properties": {
+        "entitled.enableCustomTitle": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable custom window title formatting"
+        },
+        "entitled.titlePattern": {
+          "type": "string",
+          "default": "{workspace} {branch} {filename} - VSCode",
+          "description": "Custom title pattern. Available variables: {workspace}, {branch}, {filename}"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "lint:fix": "eslint src --ext ts --fix",
+    "test": "node ./out/test/runTest.js",
+    "test:coverage": "nyc npm test",
+    "clean": "rimraf out",
+    "package": "vsce package",
+    "install-package": "code --install-extension entitled-0.0.1.vsix",
+    "publish": "vsce publish",
+    "publish:ovsx": "ovsx publish",
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major",
+    "security:audit": "npm audit --audit-level=moderate",
+    "security:fix": "npm audit fix",
+    "deps:check": "npm outdated",
+    "deps:update": "npm update"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.74.0",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "@vscode/test-electron": "^2.2.0",
+    "@vscode/vsce": "^2.15.0",
+    "eslint": "^8.28.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.1.0",
+    "nyc": "^15.1.0",
+    "ovsx": "^0.8.3",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.9.4"
+  }
+}
