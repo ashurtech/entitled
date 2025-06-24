@@ -18,10 +18,10 @@ Brief description of what this PR does.
 - [ ] New and existing unit tests pass locally with my changes
 - [ ] I have tested this manually in VS Code
 
-## Version Update
+## Version Update (Optional)
 
-- [ ] I have updated the version number in `package.json` following semantic versioning
-- [ ] Version bump type: `patch` | `minor` | `major`
+- [ ] I have updated the version number in `package.json` if this is a release-worthy change
+- [ ] Version bump type (if applicable): `patch` | `minor` | `major`
 
 ## Checklist
 

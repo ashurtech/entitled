@@ -2,7 +2,7 @@
   "name": "entitled",
   "displayName": "Entitled - Custom Window Titles",
   "description": "Customize VS Code window titles with workspace, branch, and filename information",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "ASHURTECH.NET",
   "repository": {
     "type": "git",
@@ -63,7 +63,7 @@
     "test:coverage": "nyc npm test",
     "clean": "rimraf out",
     "package": "vsce package",
-    "install-package": "code --install-extension entitled-0.0.1.vsix",
+    "install-package": "code --install-extension entitled-0.0.4.vsix",
     "publish": "vsce publish",
     "publish:ovsx": "ovsx publish",
     "version:patch": "npm version patch",
