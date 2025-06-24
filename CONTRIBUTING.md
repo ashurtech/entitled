@@ -61,18 +61,20 @@ Thank you for your interest in contributing to Entitled! This document provides 
 
 ### Version Management
 
-**Important**: All PRs must include a version bump in `package.json`.
+**Version bumping is flexible** - you can bump versions when needed for releases.
 
 - **Patch** (0.0.X): Bug fixes, small improvements
 - **Minor** (0.X.0): New features, backwards compatible
 - **Major** (X.0.0): Breaking changes
 
-Use npm scripts:
+Use npm scripts when you want to bump the version:
 ```bash
 npm run version:patch  # For bug fixes
 npm run version:minor  # For new features  
 npm run version:major  # For breaking changes
 ```
+
+**Note**: Version bumps are not required for every PR. You can manage versions manually or use the automated version-bump workflow for releases.
 
 ### Code Standards
 

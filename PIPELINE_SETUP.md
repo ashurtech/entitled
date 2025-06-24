@@ -23,8 +23,8 @@ Go to your GitHub repo → Settings → Branches → Add rule for `main`:
   - `lint-and-test (16.x)`
   - `lint-and-test (18.x)`
   - `lint-and-test (20.x)`
-  - `version-check`
   - `security-scan`
+  ~~- `version-check`~~ (disabled - overly restrictive for development)
   ~~- `dependency-review`~~ (disabled - requires GitHub Advanced Security)
 - ✅ Require branches to be up to date before merging
 

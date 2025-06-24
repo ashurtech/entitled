@@ -46,61 +46,13 @@ jobs:
     
     - name: Check package can be built
       run: npm run package
-
-  version-check:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    
-    steps:
-    - name: Checkout PR
-      uses: actions/checkout@v4
-      with:
-        ref: ${{ github.head_ref }}
-    
-    - name: Checkout base branch
-      uses: actions/checkout@v4
-      with:
-        ref: ${{ github.base_ref }}
-        path: base
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18.x'
-    
-    - name: Check version bump
-      run: |
-        BASE_VERSION=$(node -p "require('./base/package.json').version")
-        PR_VERSION=$(node -p "require('./package.json').version")
-        
-        echo "Base version: $BASE_VERSION"
-        echo "PR version: $PR_VERSION"
-        
-        # Parse versions
-        IFS='.' read -ra BASE_PARTS <<< "$BASE_VERSION"
-        IFS='.' read -ra PR_PARTS <<< "$PR_VERSION"
-        
-        BASE_MAJOR=${BASE_PARTS[0]}
-        BASE_MINOR=${BASE_PARTS[1]}
-        BASE_PATCH=${BASE_PARTS[2]}
-        
-        PR_MAJOR=${PR_PARTS[0]}
-        PR_MINOR=${PR_PARTS[1]}
-        PR_PATCH=${PR_PARTS[2]}
-        
-        # Check if version was bumped
-        if [[ "$PR_MAJOR" -gt "$BASE_MAJOR" ]] || \
-           [[ "$PR_MAJOR" -eq "$BASE_MAJOR" && "$PR_MINOR" -gt "$BASE_MINOR" ]] || \
-           [[ "$PR_MAJOR" -eq "$BASE_MAJOR" && "$PR_MINOR" -eq "$BASE_MINOR" && "$PR_PATCH" -gt "$BASE_PATCH" ]]; then
-          echo "✅ Version has been properly bumped from $BASE_VERSION to $PR_VERSION"
-        else
-          echo "❌ Version must be bumped in PR. Current: $BASE_VERSION, PR: $PR_VERSION"
-          echo "Please update the version in package.json using semantic versioning:"
-          echo "  - Patch (x.x.X): Bug fixes"
-          echo "  - Minor (x.X.x): New features (backwards compatible)"
-          echo "  - Major (X.x.x): Breaking changes"
-          exit 1
-        fi
+  # version-check:
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'pull_request'
+  #   
+  #   # NOTE: Version checking can be overly restrictive for development workflow
+  #   # You can manually manage versions or use the version-bump.yml workflow
+  #   # Uncomment this job if you want to enforce version bumps in every PR
 
   security-scan:
     runs-on: ubuntu-latest
