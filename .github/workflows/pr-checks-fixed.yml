@@ -12,7 +12,7 @@ jobs:
     
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 20.x]
+        node-version: [18.x, 20.x]  # Removed 16.x due to compatibility issues with vsce
     
     steps:
     - name: Checkout code
@@ -50,9 +50,11 @@ jobs:
       run: xvfb-run -a npm test
       env:
         DISPLAY: ':99.0'
-    
+      # Only run package check on Node 20.x to avoid compatibility issues
     - name: Check package can be built
+      if: matrix.node-version == '20.x'
       run: npm run package
+
   security-scan:
     runs-on: ubuntu-latest
     permissions:

@@ -6,7 +6,7 @@ Thank you for your interest in contributing to Entitled! This document provides 
 
 ### Prerequisites
 
-- Node.js 16.x, 18.x, or 20.x (18.x recommended)
+- Node.js 18.x or 20.x (18.x recommended, 16.x no longer supported due to packaging tool compatibility)
 - npm 8.x or higher
 - VS Code (for testing the extension)
 - Git
