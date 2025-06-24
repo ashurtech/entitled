@@ -11,11 +11,15 @@ async function main() {
 		// The path to test runner
 		// Passed to --extensionTestsPath
 		const extensionTestsPath = path.resolve(__dirname, './suite/index');
+		
+		// Check if we're running in CI/headless environment
+		const isCI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true';
+		
 		// Download VS Code, unzip it and run the integration test
 		await runTests({ 
 			extensionDevelopmentPath, 
 			extensionTestsPath,
-			// Add launch arguments for headless environments
+			// Add launch arguments for headless environments and CI
 			launchArgs: [
 				'--no-sandbox',
 				'--disable-updates',
@@ -23,9 +27,17 @@ async function main() {
 				'--skip-release-notes',
 				'--disable-workspace-trust',
 				'--disable-extensions',
-				'--disable-gpu'
+				'--disable-gpu',
+				'--disable-dev-shm-usage',
+				'--disable-background-timer-throttling',
+				'--disable-backgrounding-occluded-windows',
+				'--disable-renderer-backgrounding',
+				'--disable-features=TranslateUI',
+				'--disable-ipc-flooding-protection',
+				...(isCI ? ['--headless'] : [])
 			]
-		});} catch (err) {
+		});
+	} catch (err) {
 		console.error('Failed to run tests:', err);
 		process.exit(1);
 	}
