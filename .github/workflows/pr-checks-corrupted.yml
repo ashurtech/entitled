@@ -37,8 +37,7 @@ jobs:
     
     - name: Run linting
       run: npm run lint
-    
-    - name: Compile TypeScript
+      - name: Compile TypeScript
       run: npm run compile
     
     - name: Run CI-friendly tests (skips VS Code integration tests)
