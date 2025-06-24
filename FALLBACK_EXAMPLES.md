@@ -22,9 +22,9 @@ Use the `||` operator to create fallback chains:
 ```
 
 **Scenarios:**
-- **Git project with workspace name**: `my-project [main] app.ts (last: 15m ago)`
-- **Git project without workspace name**: `awesome-repo [feature/new] index.js (last: 2h ago)`
-- **Non-git project**: `script.py [] (last: now)`
+- **Git project with workspace name**: `my-project [main] app.ts (last: 15:30)`
+- **Git project without workspace name**: `awesome-repo [feature/new] index.js (last: 14:22)`
+- **Non-git project**: `script.py [] (last: 09:15)`
 
 ### Example 2: Multiple Fallback Chains
 ```json

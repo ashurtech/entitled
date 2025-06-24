@@ -20,5 +20,6 @@
   "npm.enableScriptExplorer": true,
   "eslint.validate": [
     "typescript"
-  ]
+  ],
+  "window.title": "now entitled - VSCode"
 }

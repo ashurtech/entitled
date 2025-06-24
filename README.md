@@ -13,7 +13,7 @@ A VS Code extension that customizes window titles to show the information you ac
 - ⚙️ **Fully Customizable**: Create your own title patterns with template variables
 - 🔄 **Real-time Updates**: Titles update automatically when you switch files, lose focus, or change branches
 - 🎯 **Smart Fallbacks**: Use `||` syntax for graceful degradation when variables are empty
-- ⏰ **Timestamp Tracking**: Shows last modification time that updates on window focus loss
+- ⏰ **Timestamp Tracking**: Shows last modification time in 24-hour format (updates on window focus loss)
 - 🚀 **Lightweight**: Minimal performance impact with comprehensive test coverage
 
 ## 🚀 Quick Start
@@ -58,7 +58,7 @@ my-project [feature/new-feature] index.ts - VSCode
 - `{repo}` - Git repository name (extracted from git config)
 - `{branch}` - Current git branch
 - `{filename}` - Active file name
-- `{timestamp}` - Last modification time (updates on window focus loss)
+- `{timestamp}` - Last modification time in 24-hour format (HH:MM, updates on window focus loss)
 
 **Fallback Patterns:**
 

@@ -73,12 +73,12 @@ suite('WindowTitleService Tests', () => {
                 repo: 'my-repo',
                 branch: 'feature/new-feature',
                 filename: 'index.ts',
-                timestamp: 'now'
+                timestamp: '14:30'
             };
 
             const result = windowTitleService.composeDefaultTitle(components);
             assert.strictEqual(result, 'my-project [feature/new-feature] index.ts - VSCode');
-        });        test('should compose title with workspace and filename only', () => {
+        });test('should compose title with workspace and filename only', () => {
             const components = {
                 workspace: 'my-project',
                 repo: 'my-repo',
@@ -161,12 +161,12 @@ suite('WindowTitleService Tests', () => {
                 repo: 'my-repo',
                 branch: 'main',
                 filename: 'test.ts',
-                timestamp: '5m ago'
+                timestamp: '14:05'
             };
 
             const result = windowTitleService.composeCustomTitle(customPattern, components);
             assert.strictEqual(result, 'test.ts | my-project | main');
-        });        test('should handle missing components in custom pattern', () => {
+        });test('should handle missing components in custom pattern', () => {
             const customPattern = '{filename} | {workspace} | {branch}';
             const components = {
                 workspace: 'my-project',
@@ -185,12 +185,12 @@ suite('WindowTitleService Tests', () => {
                 repo: 'my-repo',
                 branch: 'main',
                 filename: 'test.ts',
-                timestamp: '10m ago'
+                timestamp: '14:30'
             };
 
             const result = windowTitleService.composeCustomTitle(customPattern, components);
-            assert.strictEqual(result, 'test.ts (10m ago) - my-project');
-        });        test('should include repo name in custom pattern', () => {
+            assert.strictEqual(result, 'test.ts (14:30) - my-project');
+        });test('should include repo name in custom pattern', () => {
             const customPattern = '{repo} [{branch}] {filename}';
             const components = {
                 workspace: 'my-project',
@@ -300,55 +300,51 @@ suite('WindowTitleService Tests', () => {
 
             const result = windowTitleService.composeCustomTitle(customPattern, components);
             assert.strictEqual(result, 'app.ts - my-project');
-        });
-
-        test('should handle complex pattern with fallbacks and regular variables', () => {
+        });        test('should handle complex pattern with fallbacks and regular variables', () => {
             const customPattern = '{workspace || repo} [{branch}] {filename} (last: {timestamp})';
             const components = {
                 workspace: '',
                 repo: 'awesome-project',
                 branch: 'feature/new-stuff',
                 filename: 'index.ts',
-                timestamp: '15m ago'
+                timestamp: '15:30'
             };
 
             const result = windowTitleService.composeCustomTitle(customPattern, components);
-            assert.strictEqual(result, 'awesome-project [feature/new-stuff] index.ts (last: 15m ago)');
+            assert.strictEqual(result, 'awesome-project [feature/new-stuff] index.ts (last: 15:30)');
         });
 
-    });
-
-    suite('Timestamp Functionality', () => {
-        test('should format recent timestamp as "now"', () => {
-            const now = new Date();
-            windowTitleService.setLastModified(now);
+    });    suite('Timestamp Functionality', () => {
+        test('should format timestamp in 24-hour format', () => {
+            const testTime = new Date('2024-01-15T14:30:00'); // 2:30 PM
+            windowTitleService.setLastModified(testTime);
             
             const result = windowTitleService.getFormattedTimestamp();
-            assert.strictEqual(result, 'now');
+            assert.strictEqual(result, '14:30');
         });
 
-        test('should format minutes ago correctly', () => {
-            const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-            windowTitleService.setLastModified(fiveMinutesAgo);
+        test('should format morning time correctly', () => {
+            const morningTime = new Date('2024-01-15T09:05:00'); // 9:05 AM
+            windowTitleService.setLastModified(morningTime);
             
             const result = windowTitleService.getFormattedTimestamp();
-            assert.strictEqual(result, '5m ago');
+            assert.strictEqual(result, '09:05');
         });
 
-        test('should format hours ago correctly', () => {
-            const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
-            windowTitleService.setLastModified(twoHoursAgo);
+        test('should format midnight correctly', () => {
+            const midnight = new Date('2024-01-15T00:00:00'); // Midnight
+            windowTitleService.setLastModified(midnight);
             
             const result = windowTitleService.getFormattedTimestamp();
-            assert.strictEqual(result, '2h ago');
+            assert.strictEqual(result, '00:00');
         });
 
-        test('should format days ago correctly', () => {
-            const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
-            windowTitleService.setLastModified(threeDaysAgo);
+        test('should format late evening correctly', () => {
+            const lateEvening = new Date('2024-01-15T23:45:00'); // 11:45 PM
+            windowTitleService.setLastModified(lateEvening);
             
             const result = windowTitleService.getFormattedTimestamp();
-            assert.strictEqual(result, '3d ago');
+            assert.strictEqual(result, '23:45');
         });
     });
 });

@@ -16,23 +16,11 @@ export class WindowTitleService {
 
     constructor() {
         this.setupEventListeners();
-    }
-
-    private formatTimestamp(date: Date): string {
-        const now = new Date();
-        const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-        
-        if (diffInMinutes < 1) {
-            return 'now';
-        } else if (diffInMinutes < 60) {
-            return `${diffInMinutes}m ago`;
-        } else if (diffInMinutes < 1440) { // 24 hours
-            const hours = Math.floor(diffInMinutes / 60);
-            return `${hours}h ago`;
-        } else {
-            const days = Math.floor(diffInMinutes / 1440);
-            return `${days}d ago`;
-        }
+    }    private formatTimestamp(date: Date): string {
+        // Format as 24-hour time (HH:MM)
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
     }
 
     private setupEventListeners(): void {
