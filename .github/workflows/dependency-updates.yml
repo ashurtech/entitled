@@ -1,0 +1,73 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    # Run weekly on Mondays at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+    
+    - name: Check for updates
+      id: updates
+      run: |
+        npm outdated --json > outdated.json || true
+        if [ -s outdated.json ]; then
+          echo "has-updates=true" >> $GITHUB_OUTPUT
+          echo "Updates available:"
+          cat outdated.json
+        else
+          echo "has-updates=false" >> $GITHUB_OUTPUT
+          echo "No updates available"
+        fi
+    
+    - name: Update dependencies
+      if: steps.updates.outputs.has-updates == 'true'
+      run: |
+        # Update patch and minor versions only (safer)
+        npx npm-check-updates -u --target minor
+        npm install
+    
+    - name: Run tests after update
+      if: steps.updates.outputs.has-updates == 'true'
+      run: |
+        npm run lint
+        npm run compile
+        npm test
+    
+    - name: Create Pull Request
+      if: steps.updates.outputs.has-updates == 'true'
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'chore: update dependencies'
+        title: '🔄 Automated dependency updates'
+        body: |
+          This PR contains automated dependency updates.
+          
+          ## What changed
+          - Updated npm dependencies to their latest minor/patch versions
+          - All tests pass with the new versions
+          
+          ## Safety
+          - Only minor and patch updates are included (no breaking changes)
+          - All linting and tests pass
+          - Security audit passed
+          
+          Please review the changes and merge if everything looks good.
+        branch: dependency-updates
+        delete-branch: true

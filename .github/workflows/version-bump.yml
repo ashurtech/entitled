@@ -1,0 +1,86 @@
+name: Auto Version Bump
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'Version bump type'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: 'patch'
+
+jobs:
+  version-bump:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+    
+    - name: Configure Git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Get current version
+      id: current-version
+      run: |
+        VERSION=$(node -p "require('./package.json').version")
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Current version: $VERSION"
+    
+    - name: Bump version
+      id: version-bump
+      run: |
+        NEW_VERSION=$(npm version ${{ github.event.inputs.bump_type }} --no-git-tag-version)
+        echo "new-version=${NEW_VERSION#v}" >> $GITHUB_OUTPUT
+        echo "Bumped to: ${NEW_VERSION#v}"
+    
+    - name: Update CHANGELOG
+      run: |
+        DATE=$(date +"%Y-%m-%d")
+        NEW_VERSION="${{ steps.version-bump.outputs.new-version }}"
+        
+        # Create new changelog entry
+        cat > temp_changelog.md << EOF
+        # Changelog
+        
+        ## [$NEW_VERSION] - $DATE
+        
+        ### Added
+        - Version bump to $NEW_VERSION
+        
+        EOF
+        
+        # Append existing changelog (skip the first line if it's "# Changelog")
+        if [ -f CHANGELOG.md ]; then
+          tail -n +2 CHANGELOG.md >> temp_changelog.md
+        fi
+        
+        mv temp_changelog.md CHANGELOG.md
+    
+    - name: Commit changes
+      run: |
+        git add package.json CHANGELOG.md
+        git commit -m "chore: bump version to ${{ steps.version-bump.outputs.new-version }}"
+        git push
+    
+    - name: Create tag
+      run: |
+        git tag "v${{ steps.version-bump.outputs.new-version }}"
+        git push origin "v${{ steps.version-bump.outputs.new-version }}"
